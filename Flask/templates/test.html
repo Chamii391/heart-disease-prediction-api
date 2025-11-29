@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Heart Disease Risk Predictor</title>
+
+  <style>
+    :root{
+      --bg1:#0f172a;
+      --bg2:#111827;
+      --card:#0b1220;
+      --soft:#111827;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#22c55e;
+      --accent2:#60a5fa;
+      --danger:#ef4444;
+      --ring: rgba(96,165,250,.35);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% -10%, #1d4ed8 0%, transparent 55%),
+        radial-gradient(900px 600px at 110% 10%, #16a34a 0%, transparent 60%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .container{
+      width:100%;
+      max-width:900px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:18px;
+    }
+
+    @media (max-width:900px){
+      .container{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), #070b14);
+      border:1px solid #1f2937;
+      border-radius:18px;
+      padding:22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:-40% -20% auto auto;
+      width:300px;height:300px;
+      background: radial-gradient(circle, rgba(34,197,94,.18), transparent 60%);
+      transform: translate(40px, -40px);
+      pointer-events:none;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:8px;
+    }
+
+    .title{
+      display:flex; align-items:center; gap:12px;
+    }
+
+    .logo{
+      width:46px;height:46px;border-radius:12px;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      display:grid; place-items:center;
+      font-weight:800; color:white;
+      box-shadow: 0 8px 20px rgba(59,130,246,.35);
+      letter-spacing:.5px;
+    }
+
+    h1{ margin:0; font-size:22px; }
+    .subtitle{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:4px;
+      line-height:1.4;
+    }
+
+    .pill{
+      background:#0a1222;
+      border:1px solid #243247;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:#cbd5e1;
+      white-space:nowrap;
+    }
+
+    form{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width:700px){
+      form{ grid-template-columns:1fr; }
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    label{
+      font-size:13px;
+      color:#cbd5e1;
+      font-weight:600;
+    }
+
+    input{
+      width:100%;
+      padding:11px 12px;
+      background:#050914;
+      border:1px solid #223047;
+      color:var(--text);
+      border-radius:12px;
+      font-size:14px;
+      outline:none;
+      transition:.2s ease;
+    }
+
+    input:focus{
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    .helper{
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .full{ grid-column:1 / -1; }
+
+    .actions{
+      grid-column:1 / -1;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+
+    button{
+      appearance:none; border:none; cursor:pointer;
+      padding:12px 18px;
+      border-radius:12px;
+      font-weight:800;
+      color:#04110a;
+      background: linear-gradient(135deg, #22c55e, #86efac);
+      box-shadow: 0 10px 30px rgba(34,197,94,.35);
+      transition:.18s ease;
+      font-size:15px;
+    }
+    button:hover{ transform: translateY(-1px); filter:brightness(1.03); }
+    button:active{ transform: translateY(1px); }
+
+    .secondary{
+      background: transparent;
+      color:#cbd5e1;
+      border:1px solid #243247;
+      box-shadow:none;
+    }
+
+    /* Right panel */
+    .side{
+      display:grid; gap:18px;
+    }
+    .stat{
+      display:flex; flex-direction:column; gap:8px;
+      background: linear-gradient(180deg, #0a1020, #060a14);
+      border:1px solid #1f2937;
+      border-radius:16px;
+      padding:16px;
+    }
+    .stat h2{
+      margin:0; font-size:14px; color:#cbd5e1; font-weight:800;
+      letter-spacing:.3px;
+    }
+    .msg{
+      font-size:13px; color:var(--muted); line-height:1.55;
+    }
+    .chip-row{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{
+      font-size:11px; color:#cbd5e1;
+      background:#0a1222; border:1px solid #23324a;
+      padding:4px 8px; border-radius:999px;
+    }
+
+    .footer{
+      margin-top:8px;
+      font-size:11px;
+      color:#94a3b8;
+      text-align:right;
+      grid-column:1 / -1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- Main Form Card -->
+    <section class="card">
+      <div class="header">
+        <div class="title">
+          <div class="logo">♥</div>
+          <div>
+            <h1>Heart Disease Risk Predictor</h1>
+            <div class="subtitle">
+              Please enter your correct details to estimate risk level.
+            </div>
+          </div>
+        </div>
+        <div class="pill">TensorFlow Model</div>
+      </div>
+
+      <form action="http://127.0.0.1:5000/getresults" method="POST">
+
+        <div class="field full">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Your full name" required />
+        </div>
+
+        <div class="field">
+          <label>Gender</label>
+          <input type="number" name="gender" placeholder="0 = Male, 1 = Female" min="0" max="1" required />
+          <div class="helper">Enter 0 for Male, 1 for Female</div>
+        </div>
+
+        <div class="field">
+          <label>Age</label>
+          <input type="number" name="age" placeholder="Years" min="1" max="120" required />
+        </div>
+
+        <div class="field">
+          <label>Total Cholesterol (TC)</label>
+          <input type="number" name="tc" placeholder="mg/dL" step="0.1" required />
+        </div>
+
+        <div class="field">
+          <label>HDL Cholesterol</label>
+          <input type="number" name="hdl" placeholder="mg/dL" step="0.1" required />
+        </div>
+
+        <div class="field">
+          <label>Smoking</label>
+          <input type="number" name="smoke" placeholder="1 = Yes, 0 = No" min="0" max="1" required />
+          <div class="helper">1 for smoker, 0 for non-smoker</div>
+        </div>
+
+        <div class="field">
+          <label>BP Medication</label>
+          <input type="number" name="bpmed" placeholder="1 = Taking, 0 = Not taking" min="0" max="1" required />
+        </div>
+
+        <div class="field">
+          <label>Diabetes</label>
+          <input type="number" name="diab" placeholder="1 = Yes, 0 = No" min="0" max="1" required />
+        </div>
+
+        <div class="actions">
+          <button type="submit">Submit Details</button>
+          <button type="reset" class="secondary">Clear Form</button>
+        </div>
+
+        <div class="footer">Your data is used only for prediction</div>
+      </form>
+    </section>
+
+    <!-- Side Info Panel -->
+    <aside class="side">
+      <div class="card stat">
+        <h2>How it works</h2>
+        <p class="msg">
+          The model uses your health indicators (age, cholesterol, smoking, etc.)
+          to estimate the likelihood of heart disease risk.
+        </p>
+        <div class="chip-row">
+          <div class="chip">Regression</div>
+          <div class="chip">TensorFlow</div>
+          <div class="chip">Flask</div>
+          <div class="chip">Medical Data</div>
+        </div>
+      </div>
+
+      <div class="card stat">
+        <h2>Input Guide</h2>
+        <p class="msg">
+          • TC & HDL must be in <b>mg/dL</b><br/>
+          • Use <b>0/1</b> values for Yes/No fields<br/>
+          • Fill carefully for best prediction
+        </p>
+      </div>
+
+      <div class="card stat">
+        <h2>Disclaimer</h2>
+        <p class="msg">
+          This predictor is for educational use only and does not replace
+          professional medical advice.
+        </p>
+      </div>
+    </aside>
+
+  </div>
+</body>
+</html>

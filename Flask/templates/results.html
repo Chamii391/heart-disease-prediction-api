@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prediction Results</title>
+
+  <style>
+    :root{
+      --bg1:#0f172a;
+      --bg2:#111827;
+      --card:#0b1220;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --accent:#22c55e;
+      --accent2:#60a5fa;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --ring: rgba(96,165,250,.35);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 10% -10%, #1d4ed8 0%, transparent 55%),
+        radial-gradient(900px 600px at 110% 10%, #16a34a 0%, transparent 60%),
+        linear-gradient(160deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:850px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--card), #070b14);
+      border:1px solid #1f2937;
+      border-radius:18px;
+      padding:22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:-40% -20% auto auto;
+      width:320px;height:320px;
+      background: radial-gradient(circle, rgba(34,197,94,.18), transparent 60%);
+      transform: translate(40px, -40px);
+      pointer-events:none;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .title{
+      display:flex; align-items:center; gap:12px;
+    }
+
+    .logo{
+      width:48px;height:48px;border-radius:12px;
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      display:grid; place-items:center;
+      font-weight:800; color:white;
+      box-shadow: 0 8px 20px rgba(59,130,246,.35);
+      letter-spacing:.5px;
+      font-size:20px;
+    }
+
+    h1{ margin:0; font-size:22px; }
+    .subtitle{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:4px;
+      line-height:1.4;
+    }
+
+    .pill{
+      background:#0a1222;
+      border:1px solid #243247;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:#cbd5e1;
+      white-space:nowrap;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      margin-top:10px;
+    }
+    @media (max-width:700px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .box{
+      background:#050914;
+      border:1px solid #223047;
+      border-radius:14px;
+      padding:14px;
+    }
+
+    .label{
+      font-size:12px;
+      color:#cbd5e1;
+      font-weight:700;
+      letter-spacing:.3px;
+      margin-bottom:6px;
+    }
+
+    .value{
+      font-size:20px;
+      font-weight:800;
+      color:white;
+    }
+
+    /* Risk badge styles */
+    .risk{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:6px;
+      font-size:18px;
+      font-weight:800;
+    }
+    .badge{
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.3px;
+      border:1px solid transparent;
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* You can map your prediction text to color using simple Jinja below */
+    .low { color: var(--accent); border-color: rgba(34,197,94,.4); background: rgba(34,197,94,.12); }
+    .mid { color: var(--warn);   border-color: rgba(245,158,11,.4); background: rgba(245,158,11,.12); }
+    .high{ color: var(--danger); border-color: rgba(239,68,68,.4); background: rgba(239,68,68,.12); }
+
+    .note{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.6;
+      background:#0a1222;
+      border:1px dashed #223047;
+      padding:12px;
+      border-radius:12px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    a.btn{
+      text-decoration:none;
+      padding:11px 16px;
+      border-radius:12px;
+      font-weight:800;
+      font-size:14px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      transition:.18s ease;
+    }
+
+    .primary{
+      color:#04110a;
+      background: linear-gradient(135deg, #22c55e, #86efac);
+      box-shadow: 0 10px 30px rgba(34,197,94,.35);
+    }
+
+    .secondary{
+      color:#cbd5e1;
+      border:1px solid #243247;
+      background: transparent;
+    }
+
+    .primary:hover, .secondary:hover{
+      transform: translateY(-1px);
+      filter:brightness(1.03);
+    }
+
+    .footer{
+      margin-top:10px;
+      font-size:11px;
+      color:#94a3b8;
+      text-align:right;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <section class="card">
+
+      <div class="header">
+        <div class="title">
+          <div class="logo">♥</div>
+          <div>
+            <h1>Heart Disease Risk Level Predictor</h1>
+            <div class="subtitle">Prediction summary based on your inputs</div>
+          </div>
+        </div>
+        <div class="pill">Results</div>
+      </div>
+
+      <div class="grid">
+        <div class="box">
+          <div class="label">Patient Name</div>
+          <div class="value">{{ resultsDict['name'] }}</div>
+        </div>
+
+        <div class="box">
+          <div class="label">Predicted Risk Level</div>
+
+          <!-- If your prediction is text like "Low", "Medium", "High"
+               this badge will color automatically -->
+          {% set pred = resultsDict['prediction']|string|lower %}
+          {% if 'low' in pred %}
+            <div class="risk"><span class="badge low">LOW RISK</span> {{ resultsDict['prediction'] }}</div>
+          {% elif 'medium' in pred or 'mid' in pred %}
+            <div class="risk"><span class="badge mid">MEDIUM RISK</span> {{ resultsDict['prediction'] }}</div>
+          {% elif 'high' in pred %}
+            <div class="risk"><span class="badge high">HIGH RISK</span> {{ resultsDict['prediction'] }}</div>
+          {% else %}
+            <div class="risk"><span class="badge">RISK</span> {{ resultsDict['prediction'] }}</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="note">
+        <b>Important:</b> This prediction is for educational purposes only.
+        It does not replace professional medical advice. If you feel unwell
+        or have concerns, please consult a qualified doctor.
+      </div>
+
+      <div class="actions">
+        <a class="btn primary" href="/">Predict Another</a>
+        <a class="btn secondary" href="https://www.heart.org/" target="_blank">Heart Health Info</a>
+      </div>
+
+      <div class="footer">Powered by TensorFlow + Flask</div>
+    </section>
+  </div>
+</body>
+</html>
